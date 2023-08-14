@@ -1,24 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Tree from './tree'
 
 function App() {
+
+  const createFakeTree = () => {
+    return {
+      name: "Virginia",
+      children: [
+        {
+          name: "Manuela",
+          children: [{name: "sandra", children:[{},{}]}, {}, {}],
+        },
+        {
+          name: "Leon",
+          children: [{}, {}, {}],
+        },
+        // { name: "Santa", children: [{}, {}, {}] },
+        // { name: "Felipe", children: [{}, {}, {}] },
+        // { name: "Alejandra", children: [] },
+        // { name: "Maria", children: [{}, {}, {}] },
+        // { name: "Jovita", children: [] },
+        // { name: "Conchita", children: [{}, {}, {}] },
+        // { name: "Angelita", children: [{}, {}] },
+      ],
+    };
+  }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Tree
+        className="treeWrapper"
+        data={createFakeTree()}
+      ></Tree>;
     </div>
   );
 }
