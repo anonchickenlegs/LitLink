@@ -10,11 +10,42 @@ function App() {
       children: [
         {
           name: "Manuela",
-          children: [{name: "sandra", children:[{},{}]}, {}, {}],
+          children: [
+            {
+              name: "Santa",
+              children: [
+                {
+                  name: "Santa",
+                  children: [
+                    { name: "Santa", children: [{}, {}] },
+                    {
+                      name: "Santa",
+                      children: [{}, { name: "Santa", children: [{}, {}] }],
+                    },
+                  ],
+                },
+                {},
+                {},
+              ],
+            },
+            {},
+          ],
         },
         {
           name: "Leon",
-          children: [{}, {}, {}],
+          children: [
+            {
+              name: "Santa",
+              children: [
+                {
+                  name: "Santa",
+                  children: [{ name: "Santa", children: [{}, {}] }, {}],
+                },
+                {},
+              ],
+            },
+            {},
+          ],
         },
         // { name: "Santa", children: [{}, {}, {}] },
         // { name: "Felipe", children: [{}, {}, {}] },
