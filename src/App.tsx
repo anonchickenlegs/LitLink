@@ -1,70 +1,59 @@
-import React from 'react';
-import './App.css';
-import Tree from './tree'
+import React from "react";
+import "./App.css";
+import Tree from "./tree";
 
 function App() {
-
-  const createFakeTree = () => {
+  const createRootNode = () => {
     return {
+      id: 1,
       name: "Virginia",
-      children: [
+      partners: [
         {
-          name: "Manuela",
+          id: 2,
+          name: "Franco",
           children: [
             {
-              name: "Santa",
-              children: [
+              id: 3,
+              name: "Manuela",
+              children: [],
+              partners: [
                 {
-                  name: "Santa",
+                  id: 78,
+                  name: "david",
+                  children: [],
+                },
+              ],
+            },
+            {
+              id: 3,
+              name: "Manuela",
+              children: [],
+              partners: [
+                {
+                  id: 78,
+                  name: "david",
                   children: [
-                    { name: "Santa", children: [{}, {}] },
-                    {
-                      name: "Santa",
-                      children: [{}, { name: "Santa", children: [{}, {}] }],
-                    },
+                    { id: 3, name: "banana", children: [], partners: [] },
+                    { id: 3, name: "banana", children: [], partners: [] },
                   ],
                 },
-                {},
-                {},
               ],
             },
-            {},
           ],
         },
         {
-          name: "Leon",
-          children: [
-            {
-              name: "Santa",
-              children: [
-                {
-                  name: "Santa",
-                  children: [{ name: "Santa", children: [{}, {}] }, {}],
-                },
-                {},
-              ],
-            },
-            {},
-          ],
+          id: 5,
+          name: "Navarro",
+          children: [{ id: 4, name: "Leon", children: [], partners: [] }],
         },
-        // { name: "Santa", children: [{}, {}, {}] },
-        // { name: "Felipe", children: [{}, {}, {}] },
-        // { name: "Alejandra", children: [] },
-        // { name: "Maria", children: [{}, {}, {}] },
-        // { name: "Jovita", children: [] },
-        // { name: "Conchita", children: [{}, {}, {}] },
-        // { name: "Angelita", children: [{}, {}] },
       ],
+      children: [],
     };
-  }
-
+  };
 
   return (
     <div className="App">
-      <Tree
-        className="treeWrapper"
-        data={createFakeTree()}
-      ></Tree>;
+      <Tree rootObj={createRootNode()}></Tree>
     </div>
   );
 }
