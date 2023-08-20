@@ -1,13 +1,33 @@
-import React from "react";
-import {
-  CIRCLE_RADIUS
-} from "./utils";
+import { React, useState } from "react";
+import { CIRCLE_RADIUS } from "./utils";
 
-const NodeComp = ({ node, nodePos}) => {
+const NodeComp = ({ node, nodePos }) => {
+  const [showDetails, setShowDetails] = useState(false);
 
   const showDetailsBox = () => {
-    return "banana"
-  }
+    if (showDetails) {
+      return (
+        <rect
+          x={nodePos[0]}
+          y={nodePos[1]}
+          width="150"
+          height="150"
+          stroke="green"
+          fill="yellow"
+          strokeWidth="2"
+        />
+      );
+    } else {
+      return [];
+    }
+  };
+  const handleMouseEnter = () => {
+    setShowDetails(true);
+  };
+
+  const handleMouseLeave = () => {\
+    setShowDetails(false);
+  };
 
   return (
     <>
@@ -19,7 +39,10 @@ const NodeComp = ({ node, nodePos}) => {
         stroke="green"
         fill="yellow"
         strokeWidth="2"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       ></circle>
+      {showDetailsBox()}
     </>
   );
 };
