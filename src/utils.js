@@ -1,4 +1,5 @@
-const CIRCLE_RADIUS = "5";
+import NodeComp from "./node";
+export const CIRCLE_RADIUS = "5";
 const HEIGHT = 100;
 const CHILDREN_SPACING = 100;
 
@@ -16,7 +17,7 @@ class Node {
     this.partners = partners;
     this.partnerNodes = [];
     this.id = id;
-    this.partnerToDisplay = 1;
+    this.partnerToDisplay = 0;
     this.xPos = null;
     this.yPos = null;
   }
@@ -158,29 +159,40 @@ const findCoordinatesForChildren = (
 export const createPathsBFS = (rootNode, rootNodePos, showPartner) => {
   const queue = [[rootNode, rootNodePos]];
 
+  const nodeComponents = [];
+
   while (queue.length > 0) {
     const [node, nodePos] = queue.shift();
 
     let coordinates = [];
-
+    let nodeToShowChildrenFor = null;
     if (showPartner) {
       const partnerNode = node.partnerNodes[node.partnerToDisplay];
-      if (node && node.children.length > 0) {
-        calculateNumberOfNodesLeftAndRight(partnerNode);
+      nodeToShowChildrenFor = partnerNode;
+    } else {
+      nodeToShowChildrenFor = node;
+    }
 
-        const children = [...partnerNode.leftNodes, ...partnerNode.rightNodes];
-        const positionsToDrawNodes = getPositionsToDrawNodes(partnerNode);
+    if (nodeToShowChildrenFor && nodeToShowChildrenFor.children.length > 0) {
+      calculateNumberOfNodesLeftAndRight(nodeToShowChildrenFor);
 
-        coordinates.push(
-          ...findCoordinatesForChildren(
-            nodePos,
-            partnerNode.numberOfNodesLeft,
-            partnerNode.numberOfNodesRight,
-            positionsToDrawNodes,
-            children
-          )
-        );
-      }
+      const children = [
+        ...nodeToShowChildrenFor.leftNodes,
+        ...nodeToShowChildrenFor.rightNodes,
+      ];
+      const positionsToDrawNodes = getPositionsToDrawNodes(
+        nodeToShowChildrenFor
+      );
+
+      coordinates.push(
+        ...findCoordinatesForChildren(
+          nodePos,
+          nodeToShowChildrenFor.numberOfNodesLeft,
+          nodeToShowChildrenFor.numberOfNodesRight,
+          positionsToDrawNodes,
+          children
+        )
+      );
     }
   }
 };
@@ -195,8 +207,9 @@ const getPositionsToDrawNodes = (node) => {
 export const createPaths = (node, nodePos, showPartner, paths = []) => {
   //coordinates of children
   let coordinates = [];
+  let partnerNode = null;
   if (node && node.children.length > 0) {
-    const partnerNode = node.partnerNodes[node.partnerToDisplay];
+    partnerNode = node.partnerNodes[node.partnerToDisplay];
     calculateNumberOfNodesLeftAndRight(partnerNode);
 
     const children = [...partnerNode.leftNodes, ...partnerNode.rightNodes];
@@ -213,33 +226,16 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
     );
   }
   //circle svg of the node
-  const circle = (
-    <circle
-      key={nodePos[0] + nodePos[1]}
-      cx={nodePos[0]}
-      cy={nodePos[1]}
-      r={CIRCLE_RADIUS}
-      stroke="green"
-      fill="yellow"
-      strokeWidth="2"
-    ></circle>
-  );
+  const nodeComp = <NodeComp node={node} nodePos={nodePos}></NodeComp>;
 
-  paths.push(circle);
+  paths.push(nodeComp);
 
   if (node.partners.length > 0) {
-    const partnerCircle = (
-      <circle
-        key={nodePos[0] + 20 + nodePos[1]}
-        cx={nodePos[0] + 30}
-        cy={nodePos[1]}
-        r={CIRCLE_RADIUS}
-        stroke="green"
-        fill="yellow"
-        strokeWidth="2"
-      ></circle>
+    const partnerNodePos = [nodePos[0] + 30, nodePos[1]];
+    const partnerNodeComp = (
+      <NodeComp node={partnerNode} nodePos={partnerNodePos}></NodeComp>
     );
-    paths.push(partnerCircle);
+    paths.push(partnerNodeComp);
   }
 
   coordinates.forEach((coord) => {

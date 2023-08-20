@@ -6,11 +6,11 @@ const RootNode = ({rootObj, showPartner, svgCenter}) => {
   calculateNumberOfNodesLeftAndRight(rootNode)
 
   return (
-    <div>
+    <>
       <svg width="2000" height="3000" xmlns="http://www.w3.org/2000/svg">
         <g>{createPaths(rootNode, [svgCenter, 20], showPartner)}</g>
       </svg>
-    </div>
+    </>
   );
   
 }
