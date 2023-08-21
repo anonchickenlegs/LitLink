@@ -2,6 +2,7 @@ import React from "react";
 import {createPaths, constructTree, calculateNumberOfNodesLeftAndRight} from "./utils"
 
 const RootNode = ({rootObj, showPartner, svgCenter}) => {
+  debugger
   const rootNode = constructTree(rootObj);
   calculateNumberOfNodesLeftAndRight(rootNode)
 

@@ -1,5 +1,5 @@
 import NodeComp from "./node";
-export const CIRCLE_RADIUS = "5";
+export const CIRCLE_RADIUS = "10";
 const HEIGHT = 100;
 const CHILDREN_SPACING = 100;
 
@@ -226,14 +226,14 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
     );
   }
   //circle svg of the node
-  const nodeComp = <NodeComp node={node} nodePos={nodePos}></NodeComp>;
+  const nodeComp = <NodeComp node={node} nodePos={nodePos} isPartner={false}></NodeComp>;
 
   paths.push(nodeComp);
 
   if (node.partners.length > 0) {
     const partnerNodePos = [nodePos[0] + 30, nodePos[1]];
     const partnerNodeComp = (
-      <NodeComp node={partnerNode} nodePos={partnerNodePos}></NodeComp>
+      <NodeComp node={partnerNode} nodePos={partnerNodePos} isPartner={true}></NodeComp>
     );
     paths.push(partnerNodeComp);
   }
@@ -247,7 +247,6 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
     const secondControlPointY = coord[1] - 70;
 
     createPaths(coord[2], coord, showPartner, paths);
-
     const path = (
       <path
         key={nodePos[0] + nodePos[1] + coord[0] + coord[1]}
@@ -262,6 +261,7 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
     );
 
     paths.push(path);
+
   });
 
   return paths;

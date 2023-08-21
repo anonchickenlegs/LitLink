@@ -3,6 +3,7 @@ import RootNode from "./rootNode"
 const MemoizedRootNode = React.memo(RootNode);
 const Tree = ({rootObj}) => {
   const showPartner = true;
+  debugger
   return (
     <div>
       <MemoizedRootNode
