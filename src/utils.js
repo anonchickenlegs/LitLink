@@ -50,10 +50,17 @@ export const constructTree = (root) => {
     root.partners
   );
   const queue = [rootNode];
-
+  
   while (queue.length) {
     const node = queue.shift();
-    const nodeChildrenNodes = [];
+    const childrenIds = {};
+    const nodeChildrenNodes = node.children.map(
+      (child) => {
+        const node = new Node(child.id, child.name, [...child.children], child.partners)
+        childrenIds[child.id] = node;
+        return node;
+      }
+    );
 
     node.partners.forEach((partner) => {
       const partnerNode = new Node(
@@ -63,12 +70,15 @@ export const constructTree = (root) => {
         partner.partners
       );
       node.partnerNodes.push(partnerNode);
-      const partnerChildrenNodes = partner.children.map(
-        (child) =>
-          new Node(child.id, child.name, [...child.children], child.partners)
+      const partnerChildrenNodes = []
+      
+      partner.children.forEach(
+        (child) => {
+          if (child.id in childrenIds) {
+            partnerChildrenNodes.push(childrenIds[child.id])
+          }
+        }
       );
-      nodeChildrenNodes.push(...partnerChildrenNodes);
-      node.children.push(...partner.children);
 
       const leftRightChildren = findLeftRightChildren(partnerChildrenNodes);
 
@@ -205,35 +215,57 @@ const getPositionsToDrawNodes = (node) => {
 };
 
 export const createPaths = (node, nodePos, showPartner, paths = []) => {
+  if (!node) {
+    return;
+  }
   //coordinates of children
   let coordinates = [];
-  let partnerNode = null;
-  if (node && node.children.length > 0) {
-    partnerNode = node.partnerNodes[node.partnerToDisplay];
-    calculateNumberOfNodesLeftAndRight(partnerNode);
 
-    const children = [...partnerNode.leftNodes, ...partnerNode.rightNodes];
-    const positionsToDrawNodes = getPositionsToDrawNodes(partnerNode);
+  if (node && node.children.length > 0) {
+    let nodeToUseToFindCoordsForChildren = null;
+    if (showPartner) {
+      nodeToUseToFindCoordsForChildren =
+        node.partnerNodes[node.partnerToDisplay];
+    } else {
+      nodeToUseToFindCoordsForChildren = node;
+    }
+
+    calculateNumberOfNodesLeftAndRight(nodeToUseToFindCoordsForChildren);
+
+    const children = [
+      ...nodeToUseToFindCoordsForChildren.leftNodes,
+      ...nodeToUseToFindCoordsForChildren.rightNodes,
+    ];
+    const positionsToDrawNodes = getPositionsToDrawNodes(
+      nodeToUseToFindCoordsForChildren
+    );
 
     coordinates.push(
       ...findCoordinatesForChildren(
         nodePos,
-        partnerNode.numberOfNodesLeft,
-        partnerNode.numberOfNodesRight,
+        nodeToUseToFindCoordsForChildren.numberOfNodesLeft,
+        nodeToUseToFindCoordsForChildren.numberOfNodesRight,
         positionsToDrawNodes,
         children
       )
     );
   }
   //circle svg of the node
-  const nodeComp = <NodeComp node={node} nodePos={nodePos} isPartner={false}></NodeComp>;
+  const nodeComp = (
+    <NodeComp node={node} nodePos={nodePos} isPartner={false}></NodeComp>
+  );
 
   paths.push(nodeComp);
 
-  if (node.partners.length > 0) {
+  if (node.partners.length > 0 && showPartner) {
+    const partnerNode = node.partnerNodes[node.partnerToDisplay]
     const partnerNodePos = [nodePos[0] + 30, nodePos[1]];
     const partnerNodeComp = (
-      <NodeComp node={partnerNode} nodePos={partnerNodePos} isPartner={true}></NodeComp>
+      <NodeComp
+        node={partnerNode}
+        nodePos={partnerNodePos}
+        isPartner={true}
+      ></NodeComp>
     );
     paths.push(partnerNodeComp);
   }
@@ -261,7 +293,6 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
     );
 
     paths.push(path);
-
   });
 
   return paths;

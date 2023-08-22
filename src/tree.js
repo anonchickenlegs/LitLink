@@ -1,9 +1,8 @@
 import React from "react";
 import RootNode from "./rootNode"
 const MemoizedRootNode = React.memo(RootNode);
-const Tree = ({rootObj}) => {
-  const showPartner = true;
-  debugger
+const Tree = ({rootObj, showPartner}) => {
+  
   return (
     <div>
       <MemoizedRootNode

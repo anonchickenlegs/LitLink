@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Tree from "./tree";
+import NodeForm from "./nodeForm";
+import { fetchFamilyTree } from "./utils_api";
 
 const HomePage = () => {
   const [familyData, setFamilyData] = useState(null);
+  const [showPartner, setShowPartner] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -15,7 +18,6 @@ const HomePage = () => {
         );  
 
         const data = await response.json();
-        debugger
         setFamilyData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -27,7 +29,9 @@ const HomePage = () => {
 
   return (
     <div className="App">
-      {familyData && <Tree rootObj={familyData}></Tree>}
+      {familyData && <Tree rootObj={familyData} showPartner={showPartner}></Tree>}
+      <NodeForm></NodeForm>
+      <button type="button" onClick={() => setShowPartner(!showPartner)}>show partner</button>
     </div>
   );
 };

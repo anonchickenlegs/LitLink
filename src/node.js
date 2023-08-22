@@ -3,7 +3,7 @@ import { CIRCLE_RADIUS } from "./utils";
 
 const NodeComp = ({ node, nodePos, isPartner }) => {
   const [showDetails, setShowDetails] = useState(false);
-
+  debugger
   const showDetailsBox = () => {
     if (showDetails) {
       return (
