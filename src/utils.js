@@ -1,8 +1,8 @@
 import NodeComp from "./node";
-export const CIRCLE_RADIUS = "10";
+export const CIRCLE_RADIUS = "70";
 const HEIGHT = 100;
 const CHILDREN_SPACING = 100;
-
+const RADIUS = 500;
 class Node {
   constructor(id, name, children, partners) {
     this.leftNodes = [];
@@ -20,6 +20,16 @@ class Node {
     this.partnerToDisplay = 0;
     this.xPos = null;
     this.yPos = null;
+    this.circlePos = null;
+  }
+}
+
+class RelationshipNode {
+  constructor(name, bio) {
+    this.name = name;
+    this.relationships = []; //array of relationshipNodes it's connected to
+    this.bio = bio;
+    this.circlePos = null;
   }
 }
 
@@ -50,17 +60,20 @@ export const constructTree = (root) => {
     root.partners
   );
   const queue = [rootNode];
-  
+
   while (queue.length) {
     const node = queue.shift();
     const childrenIds = {};
-    const nodeChildrenNodes = node.children.map(
-      (child) => {
-        const node = new Node(child.id, child.name, [...child.children], child.partners)
-        childrenIds[child.id] = node;
-        return node;
-      }
-    );
+    const nodeChildrenNodes = node.children.map((child) => {
+      const node = new Node(
+        child.id,
+        child.name,
+        [...child.children],
+        child.partners
+      );
+      childrenIds[child.id] = node;
+      return node;
+    });
 
     node.partners.forEach((partner) => {
       const partnerNode = new Node(
@@ -70,15 +83,13 @@ export const constructTree = (root) => {
         partner.partners
       );
       node.partnerNodes.push(partnerNode);
-      const partnerChildrenNodes = []
-      
-      partner.children.forEach(
-        (child) => {
-          if (child.id in childrenIds) {
-            partnerChildrenNodes.push(childrenIds[child.id])
-          }
+      const partnerChildrenNodes = [];
+
+      partner.children.forEach((child) => {
+        if (child.id in childrenIds) {
+          partnerChildrenNodes.push(childrenIds[child.id]);
         }
-      );
+      });
 
       const leftRightChildren = findLeftRightChildren(partnerChildrenNodes);
 
@@ -164,6 +175,42 @@ const findCoordinatesForChildren = (
   }
 
   return coordinates;
+};
+
+function evenlySpaceNodesAroundCircle(centerX, centerY, nodes, radius) {
+  const angleIncrement = (2 * Math.PI) / nodes.length;
+
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    const angle = i * angleIncrement;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+    node.circlePos = [x, y];
+  }
+}
+
+export const constructGraph = ({ characters, relationships }) => {
+  const relationshipMapping = {};
+  const nodes = characters.map((character) => {
+    const newNode = new RelationshipNode(character.name, character.bio);
+    relationshipMapping[character.name] = newNode;
+
+    return newNode;
+  });
+
+  relationships.forEach((relationship) => {
+    relationshipMapping[relationship["character1"]].relationships.push({
+      relationNode: relationshipMapping[relationship["character2"]],
+      description: relationship[2],
+    });
+
+    relationshipMapping[relationship["character2"]].relationships.push({
+      relationNode: relationshipMapping[relationship["character1"]],
+      description: relationship["description"],
+    });
+  });
+
+  return nodes;
 };
 
 export const createPathsBFS = (rootNode, rootNodePos, showPartner) => {
@@ -258,7 +305,7 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
   paths.push(nodeComp);
 
   if (node.partners.length > 0 && showPartner) {
-    const partnerNode = node.partnerNodes[node.partnerToDisplay]
+    const partnerNode = node.partnerNodes[node.partnerToDisplay];
     const partnerNodePos = [nodePos[0] + 30, nodePos[1]];
     const partnerNodeComp = (
       <NodeComp
@@ -293,6 +340,39 @@ export const createPaths = (node, nodePos, showPartner, paths = []) => {
     );
 
     paths.push(path);
+  });
+
+  return paths;
+};
+
+export const createPathsCircle = (nodes, centerPos) => {
+  evenlySpaceNodesAroundCircle(centerPos[0], centerPos[1], nodes, RADIUS);
+  const paths = [];
+
+  nodes.forEach((node) => {
+    node.relationships.forEach((relationship) => {
+      const path = (
+        <line
+          x1={relationship.relationNode.circlePos[0]}
+          y1={relationship.relationNode.circlePos[1]}
+          x2={node.circlePos[0]}
+          y2={node.circlePos[1]}
+          stroke="black"
+          stroke-width="2"
+        />
+      );
+      paths.push(path);
+    });
+  });
+
+  nodes.forEach((node) => {
+    paths.push(
+      <NodeComp
+        node={node}
+        nodePos={node.circlePos}
+        isPartner={false}
+      ></NodeComp>
+    );
   });
 
   return paths;
